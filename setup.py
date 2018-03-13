@@ -1,5 +1,8 @@
 import os
 import json
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
 
 
 def get_settings_from_config_file():
@@ -8,7 +11,7 @@ def get_settings_from_config_file():
             json_data = file.read()
         return json.loads(json_data)
     else:
-        alert_message('Нет файла конфигурации')
+        App.message('Нет файла конфигурации')
 
 
 def get_setting_source_path_from_config_file(settings):
@@ -16,12 +19,7 @@ def get_setting_source_path_from_config_file(settings):
     if '' != path:
         return path
     else:
-        alert_message('Путь пустой')
-
-
-def alert_message(text):
-    print(text)
-    exit()
+        App.message('Путь пустой')
 
 
 def get_list_of_folders(path):
@@ -60,10 +58,11 @@ def open_and_change_ti_files(path):
         text = ''
         with open(file_path, 'r', encoding="OEM") as file:
             for line in file:
-                if '@U' in line:
-                    if 'РК' not in line:
-                        if 'а' not in line:
-                            line = ';' + line
+                if ';@U' not in line:
+                    if '@U' in line:
+                        if 'РК' not in line:
+                            if 'а' not in line:
+                                line = ';' + line
                 text = text + line
         with open(file_path, 'w', encoding="OEM") as file:
             file.write(text)
@@ -73,10 +72,34 @@ def parsing_files_tiasm_in_folders_of_tables(path):
     open_and_change_ti_files(path)
 
 
+
+
+
+class App:
+    def __init__(self, root, path):
+        self.root = root
+        self.buttons(path)
+
+    def buttons(self, path):
+        ttk.Label(self.root, text=path, font=16).pack(pady=10, padx=10)
+
+        ttk.Button(self.root, text=u'Очистить', width='20',
+                   command=lambda: parsing_files_tiasm_in_folders_of_tables(path)).pack(ipady=10, padx=10, pady=10, fill='x')
+
+    @staticmethod
+    def message(text):
+        messagebox.showinfo(title=u'Предупреждение', message=text)
+
+
 def main():
+    root = Tk()
+    root.geometry('500x300+500+200')
+    root.title(u'Чистка файлов TI от управляющих импульсов')
+    root.iconbitmap(os.getcwd() + os.path.sep + 'img' + os.path.sep + 'cleaner.ico')
     settings = get_settings_from_config_file()
     path = get_setting_source_path_from_config_file(settings)
-    parsing_files_tiasm_in_folders_of_tables(path)
+    app = App(root, path)
+    root.mainloop()
 
 
 if __name__ == '__main__':
