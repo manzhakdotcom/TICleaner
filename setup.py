@@ -1,6 +1,7 @@
 import os
 import json
 from tkinter import *
+from tkinter.filedialog import *
 from tkinter import ttk
 from tkinter import messagebox
 
@@ -69,36 +70,74 @@ def open_and_change_ti_files(path):
 
 
 def parsing_files_tiasm_in_folders_of_tables(path):
+    #settings = get_settings_from_config_file()
+    #path = get_setting_source_path_from_config_file(settings)
     open_and_change_ti_files(path)
 
 
-
-
-
 class App:
-    def __init__(self, root, path):
+    def __init__(self, root):
         self.root = root
-        self.buttons(path)
+        self.menu()
+        self.frames()
+        self.buttons()
 
-    def buttons(self, path):
-        ttk.Label(self.root, text=path, font=16).pack(pady=10, padx=10)
+    def menu(self):
+        self.root.option_add('*tearOff', False)
+        menubar = Menu(self.root)
+        self.root.config(menu=menubar)
 
-        ttk.Button(self.root, text=u'Очистить', width='20',
-                   command=lambda: parsing_files_tiasm_in_folders_of_tables(path)).pack(ipady=10, padx=10, pady=10, fill='x')
+        file = Menu(menubar)
+        tools = Menu(menubar)
+        help_ = Menu(menubar)
+
+        menubar.add_cascade(menu=file, label=u'Файл')
+        menubar.add_cascade(menu=tools, label=u'Инструменты')
+        menubar.add_cascade(menu=help_, label=u'Справка')
+
+        file.add_command(label=u'Открыть папку', command=self.get_path_dir)
+        file.add_separator()
+        file.add_command(label=u'Выйти', command=self.root.destroy)
+
+        tools.add_command(label=u'Открыть логфайл', command=lambda:self.message('Логфайла нет'))
+
+        help_.add_command(label=u'О программе', command=lambda:self.message('Автор: Манжак С.С.\nВерсия: v0.0.1\n'))
+
+    def frames(self):
+        self.frame_top = Frame(self.root, bd=1, relief='sunken')
+        self.frame_bottom = Frame(self.root, bd=1, relief='sunken')
+
+        self.frame_top.pack(side='top', fill='x')
+        self.frame_bottom.pack(side='top', fill='x')
+
+
+    def buttons(self):
+        self.contents = StringVar()
+        ttk.Label(self.frame_top, text=u'Выбрать папку c таблицами').grid(sticky='nw', row=1, column=0)
+        ttk.Entry(self.frame_top, width=30, textvariable=self.contents).grid(row=2, column=0)
+        ttk.Button(self.frame_top, text=u'Открыть', command=lambda: self.get_path_dir()).grid(row=2, column=1)
+        # here is the application variable
+        ttk.Button(self.frame_top, text=u'Очистить', command=lambda: parsing_files_tiasm_in_folders_of_tables(self.contents.get())).grid(row=3, column=0)
+
+        ttk.Button(self.frame_bottom, text=u'Отмена', command=self.root.destroy).grid(sticky='e', row=1, column=0)
+
+
+    def get_path_dir(self):
+        path = askdirectory()
+        self.contents.set(path)
+
 
     @staticmethod
     def message(text):
-        messagebox.showinfo(title=u'Предупреждение', message=text)
+        messagebox.showinfo(title=u'Сообщение - TICleaner', message=text)
 
 
 def main():
     root = Tk()
-    root.geometry('500x300+500+200')
-    root.title(u'Чистка файлов TI от управляющих импульсов')
+    root.geometry('300x300+500+200')
+    root.title(u'Очистка файлов TI от ТУ - TICleaner')
     root.iconbitmap(os.getcwd() + os.path.sep + 'img' + os.path.sep + 'cleaner.ico')
-    settings = get_settings_from_config_file()
-    path = get_setting_source_path_from_config_file(settings)
-    app = App(root, path)
+    app = App(root)
     root.mainloop()
 
 
