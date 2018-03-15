@@ -99,10 +99,12 @@ class App:
 
 def main():
     root = Tk()
+    
     root.geometry('300x130+500+200')
     root.title(u'TICleaner')
     root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
     app = App(root)
+
     root.mainloop()
 
 
