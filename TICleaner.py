@@ -11,14 +11,13 @@ class Config:
         config = configparser.ConfigParser()
         config.add_section("Settings")
         config.set("Settings", "log", "0")
-
+        config.set("Settings", "path", os.getcwd())
         with open(path, "w") as config_file:
             config.write(config_file)
 
     def get_config(self, path):
         if not os.path.exists(path):
             self.create_config(path)
-
         config = configparser.ConfigParser()
         config.read(path)
         return config
@@ -47,12 +46,12 @@ class Clear:
             self.path = path
             self.clear()
         else:
-            App.message(u'Папка не выбрана')
+            message(u'Папка не выбрана')
 
     def clear(self):
         files_path = self.get_folders_and_files()
         if not files_path:
-            App.message(u'Файлов TI.ASM не найдено')
+            message(u'Файлов TI.ASM не найдено')
         else:
             for file_path in files_path:
                 text = ''
@@ -66,7 +65,7 @@ class Clear:
                         text = text + line
                 with open(file_path, 'w', encoding="cp866") as file:
                     file.write(text)
-            App.message(u'Очищено файлов: ' + str(len(files_path)))
+            message(u'Очищено файлов: ' + str(len(files_path)))
 
     def get_folders_and_files(self):
         files_path = []
@@ -78,10 +77,17 @@ class Clear:
         return files_path
 
 
-class App(Config):
+class Logs:
+    pass
+
+
+class App:
     def __init__(self, root):
+        self.config = Config()
         self.root = root
         self.menu()
+        self.setting_path = StringVar()
+        self.contents = StringVar()
         self.elements()
 
     def menu(self):
@@ -101,9 +107,9 @@ class App(Config):
         file.add_separator()
         file.add_command(label=u'Выйти', command=self.root.destroy)
 
-        tools.add_command(label=u'Настройки',  command=self.top_level_window_for_settings)
+        tools.add_command(label=u'Настройки',  command=self.top_level_settings)
 
-        about.add_command(label=u'О программе', command=self.top_level_window_for_about)
+        about.add_command(label=u'О программе', command=self.top_level_about)
 
     def elements(self):
 
@@ -113,7 +119,6 @@ class App(Config):
         label = ttk.Label(frame, text=u'Выбрать папку c файлами TI.ASM')
         label.grid(sticky='w', row=0, column=0, columnspan=4)
 
-        self.contents = StringVar()
         entry = ttk.Entry(frame, width=30, textvariable=self.contents)
         entry.grid(row=1, column=0, columnspan=3)
 
@@ -121,9 +126,9 @@ class App(Config):
         button1.grid(row=1, column=3)
 
         button2 = ttk.Button(frame, text=u'Очистить', command=lambda: Clear(self.contents.get()))
-        button2.grid(pady=15, row=2, column=0, columnspan=4)
+        button2.grid(ipadx=10, ipady=10, pady=15, row=3, column=0, columnspan=4)
 
-    def top_level_window_for_about(self):
+    def top_level_about(self):
         win = Toplevel(self.root)
         win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
         win.title(u'О программе')
@@ -132,47 +137,72 @@ class App(Config):
         frame = Frame(win)
         frame.pack(pady=10)
 
-        label1 = ttk.Label(frame, text=u'TICleaner v0.1.3 Win7 (32-bit)')
-        label2 = ttk.Label(frame, text=u'Автор: Манжак С.С.')
-        label3 = ttk.Label(frame, text=u'Контакты: manzhak.ru')
+        label1 = ttk.Label(frame, text=u'TICleaner', font='size=18')
+        label2 = ttk.Label(frame, text=u'Автор © 2018 Манжак С.С.')
+        label3 = ttk.Label(frame, text=u'Версия v0.1.3 Win7 (32-bit)')
 
-        label1.grid(sticky='w', row=0, column=0)
-        label2.grid(sticky='w', row=1, column=0)
-        label3.grid(sticky='w', row=2, column=0)
+        label1.grid(row=0, column=0, pady=10)
+        label2.grid(row=1, column=0)
+        label3.grid(row=2, column=0)
 
         win.focus_set()
         win.grab_set()
         win.wait_window()
 
-    def top_level_window_for_settings(self):
+    def top_level_settings(self):
         win = Toplevel(self.root)
+        center(win, 270, 170, 0)
         win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
         win.title(u'Настройки')
-        center(win, 200, 100, 0)
+
+        label_frame = LabelFrame(win, text='Включить логфайл', padx=10, pady=10)
+        label_frame.pack(pady=10, padx=10)
 
         frame = Frame(win)
-        frame.pack(pady=10)
+        frame.pack()
 
         check_var = IntVar()
-        check = Checkbutton(frame, text=u'Включить логирование', variable=check_var, onvalue=1, offvalue=0)
-        if '1' == self.get_setting("settings.ini", "Settings", "log"):
+        check = Checkbutton(label_frame, text=u'Включить логирование', variable=check_var, onvalue=1, offvalue=0)
+        if '1' == self.config.get_setting("settings.ini", "Settings", "log"):
             check.select()
         check.grid(sticky='w', row=0, column=0)
 
-        button = ttk.Button(frame, text=u'Сохранить', command=lambda: self.update_setting("settings.ini", "Settings", "log", str(check_var.get())))
-        button.grid(sticky='s', row=1, column=0)
+        label = ttk.Label(label_frame, text=u'Выбрать папку для логов')
+        label.grid(sticky='w', row=1, column=0)
+
+
+
+
+        entry = ttk.Entry(label_frame, width=25, textvariable=self.setting_path)
+        if '' != self.config.get_setting("settings.ini", "Settings", "path"):
+            self.setting_path.set(self.config.get_setting("settings.ini", "Settings", "path"))
+        entry.grid(sticky='w', row=2, column=0, columnspan=2)
+
+        button1 = ttk.Button(label_frame, text=u'...', width=10, command=lambda: self.get_path_setting_dir())
+        button1.grid(sticky='w', row=2, column=2)
+
+        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings({'log': str(check_var.get()),'path': self.setting_path.get()}))
+        button2.grid(sticky='se', row=0, column=0, columnspan=3)
 
         win.focus_set()
         win.grab_set()
         win.wait_window()
+
+    def save_settings(self, settings):
+        self.config.update_setting("settings.ini", "Settings", "log", settings['log'])
+        self.config.update_setting("settings.ini", "Settings", "path", settings['path'])
 
     def get_path_dir(self):
         path = askdirectory()
         self.contents.set(path)
 
-    @staticmethod
-    def message(text):
-        messagebox.showinfo(title=u'Сообщение', message=text)
+    def get_path_setting_dir(self):
+        path = askdirectory()
+        self.setting_path.set(path)
+
+
+def message(text):
+    messagebox.showwarning(title=u'Сообщение', message=text)
 
 
 def center(root, width, height, offset):
@@ -183,7 +213,7 @@ def center(root, width, height, offset):
 
 def main():
     root = Tk()
-    center(root, 300, 130, 0)
+    center(root, 300, 150, 0)
     root.title(u'TICleaner 0.1.3')
     root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
     app = App(root)
