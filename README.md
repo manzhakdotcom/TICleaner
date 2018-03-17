@@ -1,2 +1,2 @@
-# tables_cleaner
+# TICleaner
 Clear control from TI files
