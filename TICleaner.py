@@ -8,8 +8,9 @@ from tkinter import messagebox
 
 class Config:
     def __init__(self):
-        self.config = configparser.ConfigParser()
         self.path = 'settings.ini'
+        self.config = configparser.ConfigParser()
+        self.config.read(self.path)
         self.section = 'Settings'
         self.settings = {'log': '0', 'path': os.getcwd()}
 
@@ -34,61 +35,23 @@ class Config:
         return True
 
     def create_file_settings(self):
-        self.config.add_section(self.section)
+        if not self.is_section():
+            self.config.add_section(self.section)
         for option, value in self.settings.items():
             self.config.set(self.section, option, value)
         with open(self.path, "w") as config_file:
             self.config.write(config_file)
 
-    def get_configs(self):
-        if not self.is_file():
+    def get_config_option(self, option):
+        if not self.is_file() or not self.is_section() or not self.is_option():
             self.create_file_settings()
-            return self.config.items(self.section)
-        elif not self.is_section():
-            self.config.add_section(self.section)
-        elif not self.is_option():
-            for option, value in self.settings.items():
-                if self.config.has_option(self.section, option):
-                    print('is', self.config.get(self.section, option))
-                    continue
-                else:
-                    self.config.set(self.section, option, value)
-            with open(self.path, "a") as config_file:
-                self.config.write(config_file)
-        else:
-            return self.config.read(self.path)
+        return self.config.get(self.section, option)
 
-
-    def create_configs(self, path):
-        config = configparser.ConfigParser()
-        config.add_section(self.section)
-        for option in self.options:
-            for value in self.values:
-                print(option, value)
-                config.set(self.section, option, value)
-        with open(path, "w") as config_file:
-            config.write(config_file)
-
-
-
-    def get_setting(self, path, section, option):
-        config = self.get_config(path)
-        if not config.has_option(section, option):
-            config.set(section, option, '')
-        value = config.get(section, option)
-        return value
-
-    def update_setting(self, path, section, setting, value):
-        config = self.get_config(path)
-        config.set(section, setting, value)
-        with open(path, "w") as config_file:
-            config.write(config_file)
-
-    def delete_setting(self, path, section, setting):
-        config = self.get_config(path)
-        config.remove_option(section, setting)
-        with open(path, "w") as config_file:
-            config.write(config_file)
+    def update_config_options(self, settings):
+        for option, value in settings.items():
+            self.config.set(self.section, option, str(value))
+        with open(self.path, "w") as config_file:
+            self.config.write(config_file)
 
 
 class Clear:
@@ -139,6 +102,7 @@ class App:
         self.menu()
         self.setting_path = StringVar()
         self.contents = StringVar()
+        self.check_var = IntVar()
         self.elements()
 
     def menu(self):
@@ -206,39 +170,36 @@ class App:
         win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
         win.title(u'Настройки')
 
+        self.check_var.set(self.config.get_config_option('log'))
+        self.setting_path.set(self.config.get_config_option('path'))
+
         label_frame = LabelFrame(win, text='Включить логфайл', padx=10, pady=10)
-        label_frame.pack(pady=10, padx=10)
-
         frame = Frame(win)
-        frame.pack()
 
-        check_var = IntVar()
-        check = Checkbutton(label_frame, text=u'Включить логирование', variable=check_var, onvalue=1, offvalue=0)
-        #if '1' == self.config.get_setting("settings.ini", "Settings", "log"):
-            #check.select()
-        check.grid(sticky='w', row=0, column=0)
+        check = Checkbutton(label_frame, text=u'Включить логирование', variable=self.check_var, onvalue=1, offvalue=0)
+        if int(self.check_var.get()):
+            check.select()
 
         label = ttk.Label(label_frame, text=u'Выбрать папку для логов')
-        label.grid(sticky='w', row=1, column=0)
-
         entry = ttk.Entry(label_frame, width=25, textvariable=self.setting_path)
-        #if '' != self.config.get_setting("settings.ini", "Settings", "path"):
-            #self.setting_path.set(self.config.get_setting("settings.ini", "Settings", "path"))
-        entry.grid(sticky='w', row=2, column=0, columnspan=2)
-
         button1 = ttk.Button(label_frame, text=u'...', width=10, command=lambda: self.get_path_setting_dir())
-        button1.grid(sticky='w', row=2, column=2)
+        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings())
 
-        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: print(self.config.get_configs()))
+        label_frame.pack(pady=10, padx=10)
+        frame.pack()
+        check.grid(sticky='w', row=0, column=0)
+        label.grid(sticky='w', row=1, column=0)
+        entry.grid(sticky='w', row=2, column=0, columnspan=2)
+        button1.grid(sticky='w', row=2, column=2)
         button2.grid(sticky='se', row=0, column=0, columnspan=3)
 
         win.focus_set()
         win.grab_set()
         win.wait_window()
 
-    def save_settings(self, settings):
-        self.config.update_setting("settings.ini", "Settings", "log", settings['log'])
-        self.config.update_setting("settings.ini", "Settings", "path", settings['path'])
+    def save_settings(self):
+        settings = {'log': self.check_var.get(), 'path': self.setting_path.get()}
+        self.config.update_config_options(settings)
 
     def get_path_dir(self):
         path = askdirectory()
