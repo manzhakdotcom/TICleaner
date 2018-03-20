@@ -67,19 +67,31 @@ class Clear:
         if not files_path:
             message(u'Файлов TI.ASM не найдено')
         else:
+            logs = ''
             for file_path in files_path:
                 text = ''
                 with open(file_path, 'r', encoding="cp866") as file:
+                    tu = 0
+                    log = None
                     for line in file:
+                        if '@BEGIN' in line:
+                            log = self.get_name_station(line)
                         if ';@U' not in line:
                             if '@U' in line:
                                 if u'РК' not in line:
                                     if u'а' not in line:
                                         line = ';' + line
+                                        tu += 1
                         text = text + line
+                logs = logs + log + ' - ' + str(tu) + ' импульсов ТУ закомментировано\n'
                 with open(file_path, 'w', encoding="cp866") as file:
                     file.write(text)
             message(u'Очищено файлов: ' + str(len(files_path)))
+            Logs(logs)
+
+    def get_name_station(self, line):
+        text = line
+        return text[8:-2]
 
     def get_folders_and_files(self):
         files_path = []
@@ -92,12 +104,35 @@ class Clear:
 
 
 class Logs:
-    pass
+    def __init__(self, logs):
+        self.config = Config()
+        self.write_file(logs)
+
+    def write_file(self, logs):
+        if int(self.get_log()):
+            if not os.path.exists(self.file_path()):
+                os.makedirs(self.file_path())
+            with open(self.file_path() + self.file_name() + '.log', 'w') as file:
+                file.write(logs)
+
+    def file_path(self):
+        return self.get_path() + os.sep + 'logs' + os.sep
+
+    def get_path(self):
+        path = self.config.get_config_option('path')
+        return path
+
+    def get_log(self):
+        log = self.config.get_config_option('log')
+        return log
+
+    def file_name(self):
+        from datetime import datetime
+        return 'TICleaner-logs-' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
 
 class App:
     def __init__(self, root):
-        self.config = Config()
         self.root = root
         self.menu()
         self.setting_path = StringVar()
@@ -127,20 +162,16 @@ class App:
         about.add_command(label=u'О программе', command=self.top_level_about)
 
     def elements(self):
-
         frame = Frame(self.root)
-        frame.pack(pady=10)
-
         label = ttk.Label(frame, text=u'Выбрать папку c файлами TI.ASM')
-        label.grid(sticky='w', row=0, column=0, columnspan=4)
-
         entry = ttk.Entry(frame, width=30, textvariable=self.contents)
-        entry.grid(row=1, column=0, columnspan=3)
-
         button1 = ttk.Button(frame, text=u'Выбрать', width=10, command=lambda: self.get_path_dir())
-        button1.grid(row=1, column=3)
-
         button2 = ttk.Button(frame, text=u'Очистить', command=lambda: Clear(self.contents.get()))
+
+        frame.pack(pady=10)
+        label.grid(sticky='w', row=0, column=0, columnspan=4)
+        entry.grid(row=1, column=0, columnspan=3)
+        button1.grid(row=1, column=3)
         button2.grid(ipadx=10, ipady=10, pady=15, row=3, column=0, columnspan=4)
 
     def top_level_about(self):
@@ -165,13 +196,14 @@ class App:
         win.wait_window()
 
     def top_level_settings(self):
+        config = Config()
         win = Toplevel(self.root)
         center(win, 270, 170, 0)
         win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
         win.title(u'Настройки')
 
-        self.check_var.set(self.config.get_config_option('log'))
-        self.setting_path.set(self.config.get_config_option('path'))
+        self.check_var.set(config.get_config_option('log'))
+        self.setting_path.set(config.get_config_option('path'))
 
         label_frame = LabelFrame(win, text='Включить логфайл', padx=10, pady=10)
         frame = Frame(win)
@@ -182,32 +214,34 @@ class App:
 
         label = ttk.Label(label_frame, text=u'Выбрать папку для логов')
         entry = ttk.Entry(label_frame, width=25, textvariable=self.setting_path)
-        button1 = ttk.Button(label_frame, text=u'...', width=10, command=lambda: self.get_path_setting_dir())
-        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings())
+        button1 = ttk.Button(label_frame, text=u'...', command=lambda: self.get_path_setting_dir())
+        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config))
 
         label_frame.pack(pady=10, padx=10)
-        frame.pack()
+        frame.pack(side='right', fill='x', padx=10, pady=0)
         check.grid(sticky='w', row=0, column=0)
         label.grid(sticky='w', row=1, column=0)
         entry.grid(sticky='w', row=2, column=0, columnspan=2)
         button1.grid(sticky='w', row=2, column=2)
-        button2.grid(sticky='se', row=0, column=0, columnspan=3)
+        button2.grid(sticky='n', row=0, column=0, columnspan=3)
 
         win.focus_set()
         win.grab_set()
         win.wait_window()
 
-    def save_settings(self):
+    def save_settings(self, config):
         settings = {'log': self.check_var.get(), 'path': self.setting_path.get()}
-        self.config.update_config_options(settings)
+        config.update_config_options(settings)
 
     def get_path_dir(self):
-        path = askdirectory()
-        self.contents.set(path)
+        path = askdirectory(initialdir=os.getcwd())
+        if '' != path.strip():
+            self.contents.set(path)
 
     def get_path_setting_dir(self):
-        path = askdirectory()
-        self.setting_path.set(path)
+        path = askdirectory(initialdir=os.getcwd())
+        if '' != path.strip():
+            self.setting_path.set(path)
 
 
 def message(text):

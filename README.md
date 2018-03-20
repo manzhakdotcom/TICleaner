@@ -1,2 +1,2 @@
 # TICleaner
-Clear control from TI files
+TICleaner is GUI application for clearning files with TU commands
