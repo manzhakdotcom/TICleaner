@@ -1,5 +1,7 @@
 .idea/
 test/
 build/
+logs/
 setup.py
 Modul_tkinter.pdf
+settings.ini
