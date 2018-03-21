@@ -238,7 +238,7 @@ class App:
         win.wait_window()
 
     def save_settings(self, config):
-        settings = {'log': self.check_var.get(), 'path': self.setting_path.get()}
+        settings = {'path': self.setting_path.get(), 'log': self.check_var.get()}
         config.update_config_options(settings)
 
     def get_path_dir(self):
