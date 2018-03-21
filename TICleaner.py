@@ -1,9 +1,10 @@
-﻿import os
-import configparser
-from tkinter import *
+﻿from tkinter import *
 from tkinter.filedialog import *
 from tkinter import ttk
 from tkinter import messagebox
+import configparser
+import os
+
 
 
 class Config:
@@ -83,7 +84,7 @@ class Clear:
                                         line = ';' + line
                                         tu += 1
                         text = text + line
-                logs = logs + log + ' - ' + str(tu) + ' импульсов ТУ закомментировано\n'
+                logs = logs + log + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
                 with open(file_path, 'w', encoding="cp866") as file:
                     file.write(text)
             message(u'Очищено файлов: ' + str(len(files_path)))
@@ -128,7 +129,7 @@ class Logs:
 
     def file_name(self):
         from datetime import datetime
-        return 'TICleaner-logs-' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        return u'TICleaner-log-' + datetime.now().strftime('%Y-%m-%d_%H.%M.%S')
 
 
 class App:
@@ -150,14 +151,14 @@ class App:
         about = Menu(menubar)
 
         menubar.add_cascade(menu=file, label=u'Файл')
-        menubar.add_cascade(menu=tools, label=u'Опции')
+        menubar.add_cascade(menu=tools, label=u'Настройки')
         menubar.add_cascade(menu=about, label=u'?')
 
         file.add_command(label=u'Выбрать папку...', command=self.get_path_dir)
         file.add_separator()
         file.add_command(label=u'Выйти', command=self.root.destroy)
 
-        tools.add_command(label=u'Настройки',  command=self.top_level_settings)
+        tools.add_command(label=u'Параметры...',  command=self.top_level_settings)
 
         about.add_command(label=u'О программе', command=self.top_level_about)
 
@@ -176,16 +177,17 @@ class App:
 
     def top_level_about(self):
         win = Toplevel(self.root)
+        win.resizable(0, 0)
+        center(win, 220, 100, 0)
         win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
         win.title(u'О программе')
-        center(win, 200, 100, 0)
 
         frame = Frame(win)
         frame.pack(pady=10)
 
-        label1 = ttk.Label(frame, text=u'TICleaner', font='size=18')
-        label2 = ttk.Label(frame, text=u'Автор © 2018 Манжак С.С.')
-        label3 = ttk.Label(frame, text=u'Версия v0.1.3 Win7 (32-bit)')
+        label1 = Label(frame, text=u'TICleaner', font='size=18')
+        label2 = Label(frame, text=u'Автор © 2018 Манжак С.С.')
+        label3 = Label(frame, text=u'Версия v0.1.5 Win32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -198,14 +200,15 @@ class App:
     def top_level_settings(self):
         config = Config()
         win = Toplevel(self.root)
+        win.resizable(0, 0)
         center(win, 270, 170, 0)
         win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
-        win.title(u'Настройки')
+        win.title(u'Параметры...')
 
         self.check_var.set(config.get_config_option('log'))
         self.setting_path.set(config.get_config_option('path'))
 
-        label_frame = LabelFrame(win, text='Включить логфайл', padx=10, pady=10)
+        label_frame = LabelFrame(win, text=u'Включить логфайл', padx=10, pady=10)
         frame = Frame(win)
 
         check = Checkbutton(label_frame, text=u'Включить логирование', variable=self.check_var, onvalue=1, offvalue=0)
@@ -217,7 +220,7 @@ class App:
         button1 = ttk.Button(label_frame, text=u'...', command=lambda: self.get_path_setting_dir())
         button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config))
 
-        label_frame.pack(pady=10, padx=10)
+        label_frame.pack(pady=10, padx=10, fill='x')
         frame.pack(side='right', fill='x', padx=10, pady=0)
         check.grid(sticky='w', row=0, column=0)
         label.grid(sticky='w', row=1, column=0)
@@ -256,8 +259,9 @@ def center(root, width, height, offset):
 
 def main():
     root = Tk()
+    root.resizable(0, 0)
     center(root, 300, 150, 0)
-    root.title(u'TICleaner 0.1.3')
+    root.title(u'TICleaner 0.1.5')
     root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
