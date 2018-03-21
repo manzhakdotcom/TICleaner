@@ -135,6 +135,8 @@ class Logs:
 class App:
     def __init__(self, root):
         self.root = root
+        self.root.bind('<F1>', self.top_level_about)
+        self.root.bind('<Control-q>', self.close)
         self.menu()
         self.setting_path = StringVar()
         self.contents = StringVar()
@@ -156,11 +158,14 @@ class App:
 
         file.add_command(label=u'Выбрать папку...', command=self.get_path_dir)
         file.add_separator()
-        file.add_command(label=u'Выйти', command=self.root.destroy)
+        file.add_command(label=u'Выйти', command=self.close, accelerator="Ctrl+Q")
 
         tools.add_command(label=u'Параметры...',  command=self.top_level_settings)
 
-        about.add_command(label=u'О программе', command=self.top_level_about)
+        about.add_command(label=u'О программе', command=self.top_level_about, accelerator="F1")
+
+    def close(self, event=None):
+        self.root.destroy()
 
     def elements(self):
         frame = Frame(self.root)
@@ -175,7 +180,7 @@ class App:
         button1.grid(row=1, column=3)
         button2.grid(ipadx=10, ipady=10, pady=15, row=3, column=0, columnspan=4)
 
-    def top_level_about(self):
+    def top_level_about(self, event=None):
         win = Toplevel(self.root)
         win.resizable(0, 0)
         center(win, 220, 100, 0)
