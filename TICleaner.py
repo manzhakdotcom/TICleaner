@@ -1,10 +1,10 @@
-﻿from tkinter import *
+﻿# coding: utf-8
+from tkinter import *
 from tkinter.filedialog import *
 from tkinter import ttk
 from tkinter import messagebox
 import configparser
 import os
-
 
 
 class Config:
@@ -87,8 +87,8 @@ class Clear:
                 logs = logs + log + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
                 with open(file_path, 'w', encoding="cp866") as file:
                     file.write(text)
-            message(u'Очищено файлов: ' + str(len(files_path)))
             Logs(logs)
+            message(u'Очищено файлов: ' + str(len(files_path)))
 
     def get_name_station(self, line):
         text = line
@@ -160,7 +160,7 @@ class App:
         file.add_separator()
         file.add_command(label=u'Выйти', command=self.close, accelerator="Ctrl+Q")
 
-        tools.add_command(label=u'Параметры...',  command=self.top_level_settings)
+        tools.add_command(label=u'Параметры...', command=self.top_level_settings)
 
         about.add_command(label=u'О программе', command=self.top_level_about, accelerator="F1")
 
@@ -192,7 +192,7 @@ class App:
 
         label1 = Label(frame, text=u'TICleaner', font='size=18')
         label2 = Label(frame, text=u'Автор © 2018 Манжак С.С.')
-        label3 = Label(frame, text=u'Версия v0.1.5 Win32')
+        label3 = Label(frame, text=u'Версия v0.1.6 Win32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -257,8 +257,8 @@ def message(text):
 
 
 def center(root, width, height, offset):
-    x = root.winfo_screenwidth()/2-width/2+offset
-    y = root.winfo_screenheight()/2-height/2+offset
+    x = root.winfo_screenwidth() / 2 - width / 2 + offset
+    y = root.winfo_screenheight() / 2 - height / 2 + offset
     root.geometry('{}x{}+{}+{}'.format(width, height, round(x), round(y)))
 
 
@@ -266,7 +266,7 @@ def main():
     root = Tk()
     root.resizable(0, 0)
     center(root, 300, 150, 0)
-    root.title(u'TICleaner 0.1.5')
+    root.title(u'TICleaner 0.1.6')
     root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
