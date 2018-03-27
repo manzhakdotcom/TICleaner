@@ -70,13 +70,14 @@ class Clear:
         else:
             logs = ''
             for file_path in files_path:
+                file_name = os.path.basename(file_path)
                 text = ''
                 with open(file_path, 'r', encoding="cp866") as file:
                     tu = 0
-                    log = None
+                    station = u'Номер станции'
                     for line in file:
                         if '@BEGIN' in line:
-                            log = self.get_name_station(line)
+                            station = self.get_name_station(line)
                         if ';@U' not in line:
                             if '@U' in line:
                                 if u'РК' not in line:
@@ -84,7 +85,7 @@ class Clear:
                                         line = ';' + line
                                         tu += 1
                         text = text + line
-                logs = logs + log + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
+                logs = logs + station.replace("'", "") + ' ' + file_name[2:-4] + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
                 with open(file_path, 'w', encoding="cp866") as file:
                     file.write(text)
             Logs(logs)
