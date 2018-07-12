@@ -264,18 +264,11 @@ def center(root, width, height, offset):
 
 def main():
     root = Tk()
-<<<<<<< HEAD
-    
-    root.geometry('300x130+500+200')
-    root.title(u'TICleaner')
-=======
     root.resizable(0, 0)
     center(root, 300, 150, 0)
     root.title(u'TICleaner 0.1.5')
->>>>>>> release/v0.1.5
-    root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
+    root.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
     app = App(root)
-
     root.mainloop()
 
 
