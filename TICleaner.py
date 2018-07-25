@@ -185,7 +185,7 @@ class App:
         win = Toplevel(self.root)
         win.resizable(0, 0)
         center(win, 220, 100, 0)
-        win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
+        win.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
         win.title(u'О программе')
 
         frame = Frame(win)
@@ -193,7 +193,7 @@ class App:
 
         label1 = Label(frame, text=u'TICleaner', font='size=18')
         label2 = Label(frame, text=u'Автор © 2018 Манжак С.С.')
-        label3 = Label(frame, text=u'Версия v0.1.6 Win32')
+        label3 = Label(frame, text=u'Версия v' + self.root.version + ' Win32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -266,9 +266,10 @@ def center(root, width, height, offset):
 
 def main():
     root = Tk()
+    root.version = '0.1.7'
     root.resizable(0, 0)
     center(root, 300, 150, 0)
-    root.title(u'TICleaner 0.1.6')
+    root.title(u'TICleaner ' + root.version)
     root.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
