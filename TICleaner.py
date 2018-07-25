@@ -224,7 +224,7 @@ class App:
         label = ttk.Label(label_frame, text=u'Выбрать папку для логов')
         entry = ttk.Entry(label_frame, width=25, textvariable=self.setting_path)
         button1 = ttk.Button(label_frame, text=u'...', command=lambda: self.get_path_setting_dir())
-        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config))
+        button2 = ttk.Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config, win))
 
         label_frame.pack(pady=10, padx=10, fill='x')
         frame.pack(side='right', fill='x', padx=10, pady=0)
@@ -238,9 +238,10 @@ class App:
         win.grab_set()
         win.wait_window()
 
-    def save_settings(self, config):
+    def save_settings(self, config, win):
         settings = {'path': self.setting_path.get(), 'log': self.check_var.get()}
         config.update_config_options(settings)
+        win.destroy()
 
     def get_path_dir(self):
         path = askdirectory(initialdir=os.getcwd())
@@ -268,7 +269,7 @@ def main():
     root.resizable(0, 0)
     center(root, 300, 150, 0)
     root.title(u'TICleaner 0.1.6')
-    root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
+    root.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
 
