@@ -266,7 +266,7 @@ def center(root, width, height, offset):
 
 def main():
     root = Tk()
-    root.version = '0.1.7'
+    root.version = '0.1.8'
     root.resizable(0, 0)
     center(root, 300, 150, 0)
     root.title(u'TICleaner ' + root.version)
