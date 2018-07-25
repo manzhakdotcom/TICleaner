@@ -186,15 +186,15 @@ class App:
         win = Toplevel(self.root)
         win.resizable(0,0)
         center(win, 220, 100, 0)
-        win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
+        win.iconbitmap(os.getcwd() + os.path.sep + u'icon.ico')
         win.title(u'О программе')
 
         frame = Frame(win)
         frame.pack(pady=10)
 
         label1 = Label(frame, text=u'TICleaner', font='size=18')
-        label2 = Label(frame, text=u'Автор © 2018 Манжак С.С.')
-        label3 = Label(frame, text=u'Версия v0.1.6 Win32')
+        label2 = Label(frame, text=u'Автор © Манжак С.С.')
+        label3 = Label(frame, text=u'Версия v' + self.root.version + u' Win32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -209,7 +209,7 @@ class App:
         win = Toplevel(self.root)
         win.resizable(0,0)
         center(win, 270, 170, 0)
-        win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + u'icon.ico')
+        win.iconbitmap(os.getcwd() + os.path.sep + u'icon.ico')
         win.title(u'Параметры...')
 
         self.check_var.set(config.get_config_option('log'))
@@ -225,7 +225,7 @@ class App:
         label = Label(label_frame, text=u'Выбрать папку для логов')
         entry = Entry(label_frame, width=30, textvariable=self.setting_path)
         button1 = Button(label_frame, text=u'...', command=lambda: self.get_path_setting_dir())
-        button2 = Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config))
+        button2 = Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config, win))
 
         label_frame.pack(pady=10, padx=10, fill='x')
         frame.pack(side='right', fill='x', padx=10, pady=0)
@@ -239,9 +239,10 @@ class App:
         win.grab_set()
         win.wait_window()
 
-    def save_settings(self, config):
+    def save_settings(self, config, win):
         settings = {'path': self.setting_path.get(), 'log': self.check_var.get()}
         config.update_config_options(settings)
+        win.destroy()
 
     def get_path_dir(self):
         path = tkFileDialog.askdirectory(initialdir=os.getcwd())
@@ -266,10 +267,11 @@ def center(root, width, height, offset):
 
 def main():
     root = Tk()
+    root.version = '0.1.8'
     root.resizable(0,0)
     center(root, 300, 150, 0)
-    root.title(u'TICleaner 0.1.6')
-    root.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
+    root.title(u'TICleaner ' + root.version)
+    root.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
 

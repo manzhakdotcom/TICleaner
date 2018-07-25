@@ -185,15 +185,15 @@ class App:
         win = Toplevel(self.root)
         win.resizable(0, 0)
         center(win, 220, 100, 0)
-        win.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
+        win.iconbitmap(os.getcwd() + os.path.sep + u'icon.ico')
         win.title(u'О программе')
 
         frame = Frame(win)
         frame.pack(pady=10)
 
         label1 = Label(frame, text=u'TICleaner', font='size=18')
-        label2 = Label(frame, text=u'Автор © 2018 Манжак С.С.')
-        label3 = Label(frame, text=u'Версия v' + self.root.version + ' Win32')
+        label2 = Label(frame, text=u'Автор © Манжак С.С.')
+        label3 = Label(frame, text=u'Версия v' + self.root.version + u' Win32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -208,7 +208,7 @@ class App:
         win = Toplevel(self.root)
         win.resizable(0, 0)
         center(win, 270, 170, 0)
-        win.iconbitmap(os.getcwd() + os.path.sep + os.path.sep + 'icon.ico')
+        win.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
         win.title(u'Параметры...')
 
         self.check_var.set(config.get_config_option('log'))
