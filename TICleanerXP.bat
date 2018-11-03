@@ -1,0 +1,34 @@
+::[Bat To Exe Converter]
+::
+::YAwzoRdxOk+EWAjk
+::fBw5plQjdCyDJGmd4Eo/JidgZSeOOWq0A6cg4ev04aSOoUJ9
+::YAwzuBVtJxjWCl3EqQJgSA==
+::ZR4luwNxJguZRRnk
+::Yhs/ulQjdF+5
+::cxAkpRVqdFKZSDk=
+::cBs/ulQjdF+5
+::ZR41oxFsdFKZSDk=
+::eBoioBt6dFKZSDk=
+::cRo6pxp7LAbNWATEpCI=
+::egkzugNsPRvcWATEpCI=
+::dAsiuh18IRvcCxnZtBJQ
+::cRYluBh/LU+EWAnk
+::YxY4rhs+aU+IeA==
+::cxY6rQJ7JhzQF1fEqQJgZksaHErTXA==
+::ZQ05rAF9IBncCkqN+0xwdVsEAlTMbSXiZg==
+::ZQ05rAF9IAHYFVzEqQKA6quXDLRdjLsL5gT9WD1KD6q/ki0=
+::eg0/rx1wNQPfEVWB+kM9LVsJDDCrH2e/B7sZ+tDLjw==
+::fBEirQZwNQPfEVWB+kM9LVsJDGQ=
+::cRolqwZ3JBvQF1fEqQKA0quK/Ngy4NtvtmitClgjXgo2Qf3I5QB/yW5qOAVukD6jMPU8NSb/lsu+KBu81auDzsfrIC4HhC7zVyQ173dAA9BQqfhSV6eB+tWkN79gVGuLomOr1KM=
+::dhA7uBVwLU+EWOl4RJKA9auC/NQy5iuZSJZSiA==
+::YQ03rBFzNR3SWATElA==
+::dhAmsQZ3MwfNWATERL6A+KuJ/NIy7NtgRgXdplg6oYo=
+::ZQ0/vhVqMQ3MEVWAtB9wSA==
+::Zg8zqx1/OA3MEVWAtB9wSA==
+::dhA7pRFwIByZRRnk
+::Zh4grVQjdCyDJGmd4Eo/JidgZSeOOWq0A6cg3MHY4++GrEgPbNJxfZfeug==
+::YB416Ek+ZG8=
+::
+::
+::978f952a14a936cc963da21a135fa983
+start pythonw %cd%\TICleanerXP.pyw %*

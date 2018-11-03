@@ -1,6 +1,5 @@
 .idea/
 .vscode/
-test/
 logs/
 setup.py
 settings.ini

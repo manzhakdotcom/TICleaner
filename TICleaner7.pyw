@@ -191,9 +191,9 @@ class App:
         frame = Frame(win)
         frame.pack(pady=10)
 
-        label1 = Label(frame, text=u'TICleaner', font='size=18')
+        label1 = Label(frame, text=u'TICleaner7', font='size=10')
         label2 = Label(frame, text=u'Автор © Манжак С.С.')
-        label3 = Label(frame, text=u'Версия v' + self.root.version + u' Win32')
+        label3 = Label(frame, text=u'Версия v' + self.root.version + u' Win7 32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -269,7 +269,7 @@ def main():
     root.version = '0.1.8'
     root.resizable(0, 0)
     center(root, 300, 150, 0)
-    root.title(u'TICleaner ' + root.version)
+    root.title(u'TICleaner7')
     root.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
