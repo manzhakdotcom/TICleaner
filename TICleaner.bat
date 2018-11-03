@@ -14,10 +14,10 @@
 ::dAsiuh18IRvcCxnZtBJQ
 ::cRYluBh/LU+EWAnk
 ::YxY4rhs+aU+IeA==
-::cxY6rQJ7JhzQF1fEqQJgZksaHErTXA==
-::ZQ05rAF9IBncCkqN+0xwdVsEAlTMbSXiZg==
-::ZQ05rAF9IAHYFVzEqQKA6quXDLRdjLsL5gT9WD1KD6q/ki0=
-::eg0/rx1wNQPfEVWB+kM9LVsJDDCrH2e/B7sZ+tDLjw==
+::cxY6rQJ7JhzQF1fEqQJgZksaHErQXA==
+::ZQ05rAF9IBncCkqN+0xwdVsEAlTMbSXjZg==
+::ZQ05rAF9IAHYFVzEqQKA6quXDLRdjLsL5gT9WD1KD4o=
+::eg0/rx1wNQPfEVWB+kM9LVsJDDCrH2e/B7sZ+og=
 ::fBEirQZwNQPfEVWB+kM9LVsJDGQ=
 ::cRolqwZ3JBvQF1fEqQKA0quK/Ngy4NtvtmitClgjXgo2Qf3I5QB/yW5qOAVukD6jMPU8NSb/lsu+KBu81auDzsfrIC4HhC7zVyQ173dAA9BQqfhSV6eB+tWkN79gVGuLomOr1KM=
 ::dhA7uBVwLU+EWOl4RJKA9auC/NQy5iuZSJZSiA==
@@ -26,9 +26,9 @@
 ::ZQ0/vhVqMQ3MEVWAtB9wSA==
 ::Zg8zqx1/OA3MEVWAtB9wSA==
 ::dhA7pRFwIByZRRnk
-::Zh4grVQjdCyDJGmd4Eo/JidgZSeOOWq0A6cg3MHY4++GrEgPbNJxfZfeug==
+::Zh4grVQjdCyDJGmd4Eo/JidgZSeOOWq0A6cg3MHY4++GrEgPGucnfe8=
 ::YB416Ek+ZG8=
 ::
 ::
 ::978f952a14a936cc963da21a135fa983
-start pythonw %cd%\TICleanerXP.pyw %*
+start pythonw "%~dp0\TICleaner.pyw"
