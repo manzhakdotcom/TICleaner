@@ -1,10 +1,16 @@
 ﻿# coding: utf-8
 import os
-import ConfigParser as configparser
-import codecs
-from Tkinter import *
-import tkFileDialog
-import tkMessageBox as messagebox
+try:
+    from Tkinter import *
+    from tkFileDialog import *
+    import tkMessageBox as messagebox
+    import ConfigParser as configparser
+    import codecs
+except ImportError:
+    from tkinter import *
+    from tkinter.filedialog import *
+    from tkinter import messagebox
+    import configparser
 
 
 class Config:
@@ -70,31 +76,38 @@ class Clear:
         else:
             logs = ''
             for file_path in files_path:
-                text = ''
                 file_name = os.path.basename(file_path)
-                with codecs.open(file_path, 'r', encoding="cp866") as file:
-                    tu = 0
-                    station = u'Название файла'
-                    for line in file:
-                        if '@BEGIN' in line:
-                            station = self.get_name_station(line)
-                        if ';@U' not in line:
-                            if '@U' in line:
-                                if u'РК' not in line:
-                                    if u'а' not in line:
-                                        line = ';' + line
-                                        tu += 1
-                        text = text + line
+                text = ''
+                try:
+                    file = open(file_path, 'r', encoding="cp866")
+                except TypeError:
+                    file = codecs.open(file_path, 'r', encoding="cp866")
+                tu = 0
+                station = u'Название файла'
+                for line in file:
+                    if '@BEGIN' in line:
+                        station = self.get_name_station(line)
+                    if ';@U' not in line:
+                        if '@U' in line:
+                            if u'РК' not in line:
+                                if u'а' not in line:
+                                    line = ';' + line
+                                    tu += 1
+                    text = text + line
+                file.close()
                 logs = logs + station.replace("'", "") + ' ' + file_name[2:-4] + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
-                with codecs.open(file_path, 'w', encoding="cp866") as file:
-                    file.write(text)
-            Logs(logs)
+                try:
+                    file = open(file_path, 'w', encoding="cp866")
+                except TypeError:
+                    file = codecs.open(file_path, 'w', encoding="cp866")
+                file.write(text)
+                file.close()
             message(u'Очищено файлов: ' + str(len(files_path)))
-
+            Logs(logs)
 
     def get_name_station(self, line):
         text = line
-        return text[8:-3]
+        return text[8:-2]
 
     def get_folders_and_files(self):
         files_path = []
@@ -115,8 +128,16 @@ class Logs:
         if int(self.get_log()):
             if not os.path.exists(self.file_path()):
                 os.makedirs(self.file_path())
-            with codecs.open(self.file_path() + self.file_name() + '.log', 'w', encoding="cp866") as file:
-                file.write(logs)
+            try:
+                file = open(self.file_path() + self.file_name() + '.log', 'w', encoding="cp1251")
+            except TypeError:
+                file = codecs.open(self.file_path() + self.file_name() + '.log', 'w', encoding="cp1251")
+            file.write(logs)
+            file.close()
+            message(u'Логфайл с результатами работы программы записан в файл:\n'
+                    + self.file_path()
+                    + self.file_name()
+                    + '.log')
 
     def file_path(self):
         return self.get_path() + os.sep + 'logs' + os.sep
@@ -138,15 +159,12 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.bind('<F1>', self.top_level_about)
-        self.root.bind('<Alt-F4>', self.close)
+        self.root.bind('<Control-q>', self.close)
         self.menu()
         self.setting_path = StringVar()
         self.contents = StringVar()
         self.check_var = IntVar()
         self.elements()
-
-    def close(self, event=None):
-        self.root.destroy
 
     def menu(self):
         self.root.option_add('*tearOff', False)
@@ -163,11 +181,14 @@ class App:
 
         file.add_command(label=u'Выбрать папку...', command=self.get_path_dir)
         file.add_separator()
-        file.add_command(label=u'Выйти', command=self.close, accelerator="Alt+F4")
+        file.add_command(label=u'Выйти', command=self.close, accelerator="Ctrl+Q")
 
-        tools.add_command(label=u'Параметры...',  command=self.top_level_settings)
+        tools.add_command(label=u'Параметры...', command=self.top_level_settings)
 
         about.add_command(label=u'О программе', command=self.top_level_about, accelerator="F1")
+
+    def close(self, event=None):
+        self.root.destroy()
 
     def elements(self):
         frame = Frame(self.root)
@@ -184,17 +205,17 @@ class App:
 
     def top_level_about(self, event=None):
         win = Toplevel(self.root)
-        win.resizable(0,0)
-        center(win, 220, 100, 0)
+        win.resizable(0, 0)
+        center(win, 220, 150, 0)
         win.iconbitmap(os.getcwd() + os.path.sep + u'icon.ico')
         win.title(u'О программе')
 
         frame = Frame(win)
         frame.pack(pady=10)
 
-        label1 = Label(frame, text=u'TICleanerXP', font='size=18')
+        label1 = Label(frame, text=u'Программа TICleaner\nкомментирует строки с\nимпульсами ТУ.')
         label2 = Label(frame, text=u'Автор © Манжак С.С.')
-        label3 = Label(frame, text=u'Версия v' + self.root.version + u' WinXP 32')
+        label3 = Label(frame, text=u'Версия v' + self.root.version + u' Win 32')
 
         label1.grid(row=0, column=0, pady=10)
         label2.grid(row=1, column=0)
@@ -207,9 +228,9 @@ class App:
     def top_level_settings(self):
         config = Config()
         win = Toplevel(self.root)
-        win.resizable(0,0)
+        win.resizable(0, 0)
         center(win, 270, 170, 0)
-        win.iconbitmap(os.getcwd() + os.path.sep + u'icon.ico')
+        win.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
         win.title(u'Параметры...')
 
         self.check_var.set(config.get_config_option('log'))
@@ -223,7 +244,7 @@ class App:
             check.select()
 
         label = Label(label_frame, text=u'Выбрать папку для логов')
-        entry = Entry(label_frame, width=30, textvariable=self.setting_path)
+        entry = Entry(label_frame, width=25, textvariable=self.setting_path)
         button1 = Button(label_frame, text=u'...', command=lambda: self.get_path_setting_dir())
         button2 = Button(frame, text=u'Сохранить', command=lambda: self.save_settings(config, win))
 
@@ -245,12 +266,12 @@ class App:
         win.destroy()
 
     def get_path_dir(self):
-        path = tkFileDialog.askdirectory(initialdir=os.getcwd())
+        path = askdirectory(initialdir=os.getcwd())
         if '' != path.strip():
             self.contents.set(path)
 
     def get_path_setting_dir(self):
-        path = tkFileDialog.askdirectory(initialdir=os.getcwd())
+        path = askdirectory(initialdir=os.getcwd())
         if '' != path.strip():
             self.setting_path.set(path)
 
@@ -260,17 +281,17 @@ def message(text):
 
 
 def center(root, width, height, offset):
-    x = root.winfo_screenwidth()/2-width/2+offset
-    y = root.winfo_screenheight()/2-height/2+offset
+    x = round(root.winfo_screenwidth() / 2 - width / 2 + offset)
+    y = round(root.winfo_screenheight() / 2 - height / 2 + offset)
     root.geometry('{}x{}+{}+{}'.format(width, height, int(x), int(y)))
 
 
 def main():
     root = Tk()
-    root.version = '0.1.8'
-    root.resizable(0,0)
+    root.version = '0.1.9'
+    root.resizable(0, 0)
     center(root, 300, 150, 0)
-    root.title(u'TICleanerXP')
+    root.title(u'TICleaner')
     root.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
     app = App(root)
     root.mainloop()
