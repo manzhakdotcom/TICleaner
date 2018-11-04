@@ -192,7 +192,7 @@ class App:
 
     def elements(self):
         frame = Frame(self.root)
-        label = Label(frame, text=u'Выбрать папку c файлами TI.ASM')
+        label = Label(frame, text=u'Папка c файлами TI.ASM')
         entry = Entry(frame, width=30, textvariable=self.contents)
         button1 = Button(frame, text=u'Выбрать', width=10, command=lambda: self.get_path_dir())
         button2 = Button(frame, text=u'Очистить', command=lambda: Clear(self.contents.get()))
