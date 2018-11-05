@@ -58,12 +58,12 @@ class Clear:
             self.path = path
             self.clear()
         else:
-            message(u'Папка не выбрана')
+            messagebox.showwarning(u'Предупреждение', u'Папка не выбрана.')
 
     def clear(self):
         files_path = self.get_folders_and_files()
         if not files_path:
-            message(u'Файлов TI.ASM не найдено')
+            messagebox.showwarning(u'Предупреждение', u'Файлов TI.ASM не найдено')
         else:
             logs = ''
             for file_path in files_path:
@@ -86,14 +86,14 @@ class Clear:
                                     tu += 1
                     text = text + line
                 file.close()
-                logs = logs + station.replace("'", "") + ' ' + file_name[2:-4] + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
+                logs = logs + station.replace("'", "") + ' ' + str(file_name[2:-4]) + ' - ' + str(tu) + u' импульсов ТУ закомментировано\n'
                 try:
                     file = open(file_path, 'w', encoding="cp866")
                 except TypeError:
                     file = codecs.open(file_path, 'w', encoding="cp866")
                 file.write(text)
                 file.close()
-            message(u'Очищено файлов: ' + str(len(files_path)))
+            messagebox.showinfo(u'Сообщение', u'Очищено файлов: [ ' + str(len(files_path)) + ' ].')
             Logs(logs)
 
     def get_name_station(self, line):
@@ -116,7 +116,7 @@ class Logs:
         self.write_file(logs)
 
     def write_file(self, logs):
-        if int(self.get_log()):
+        if self.get_log():
             if not os.path.exists(self.file_path()):
                 os.makedirs(self.file_path())
             try:
@@ -125,21 +125,19 @@ class Logs:
                 file = codecs.open(self.file_path() + self.file_name() + '.log', 'w', encoding="cp1251")
             file.write(logs)
             file.close()
-            message(u'Логфайл с результатами работы программы записан в файл:\n'
-                    + self.file_path()
-                    + self.file_name()
-                    + '.log')
+            messagebox.showinfo(u'Сообщение', u'Логфайл с результатами работы программы записан в файл:\n'
+                                + self.file_path()
+                                + self.file_name()
+                                + '.log')
 
     def file_path(self):
-        return self.get_path() + os.sep + 'logs' + os.sep
+        return self.get_path() + os.path.sep + 'logs' + os.path.sep
 
     def get_path(self):
-        path = self.config.get_config_option('path')
-        return path
+        return self.config.get_config_option('Settings', 'path')
 
     def get_log(self):
-        log = self.config.get_config_option('log')
-        return log
+        return int(self.config.get_config_option('Settings', 'log'))
 
     def file_name(self):
         from datetime import datetime
