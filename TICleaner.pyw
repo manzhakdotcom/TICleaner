@@ -19,6 +19,8 @@ class Config:
         self.config = configparser.ConfigParser()
         if self.is_file(self.path):
             self.config.read(self.path)
+            if not self.is_section('Settings'):
+                self.config['Settings'] = {'log': '0', 'path': os.getcwd()}
         else:
             self.config['Settings'] = {'log': '0', 'path': os.getcwd()}
 
