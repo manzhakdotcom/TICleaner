@@ -17,46 +17,35 @@ class Config:
     def __init__(self):
         self.path = 'settings.ini'
         self.config = configparser.ConfigParser()
-        self.config.read(self.path)
-        self.section = 'Settings'
-        self.settings = {'log': '0', 'path': os.getcwd()}
+        if self.is_file(self.path):
+            self.config.read(self.path)
+        else:
+            self.config['Settings'] = {'log': '0', 'path': os.getcwd()}
 
-    def is_file(self):
-        if not os.path.exists(self.path):
+    def is_file(self, path):
+        if not os.path.exists(path):
             return False
         else:
             return True
 
-    def is_section(self):
-        if self.config.has_section(self.section):
+    def is_section(self, section):
+        if self.config.has_section(section):
             return True
         else:
             return False
 
-    def is_option(self):
-        for option, value in self.settings.items():
-            if self.config.has_option(self.section, option):
-                continue
-            else:
-                return False
-        return True
+    def is_option(self, section, option):
+        if self.config.has_option(section, option):
+            return True
+        else:
+            return False
 
-    def create_file_settings(self):
-        if not self.is_section():
-            self.config.add_section(self.section)
-        for option, value in self.settings.items():
-            self.config.set(self.section, option, value)
-        with open(self.path, "w") as config_file:
-            self.config.write(config_file)
+    def get_config_option(self, section, option):
+        return self.config.get(section, option)
 
-    def get_config_option(self, option):
-        if not self.is_file() or not self.is_section() or not self.is_option():
-            self.create_file_settings()
-        return self.config.get(self.section, option)
-
-    def update_config_options(self, settings):
+    def update_config_options(self, section, settings):
         for option, value in settings.items():
-            self.config.set(self.section, option, str(value))
+            self.config.set(section, option, str(value))
         with open(self.path, "w") as config_file:
             self.config.write(config_file)
 
@@ -233,8 +222,8 @@ class App:
         win.iconbitmap(os.getcwd() + os.path.sep + 'icon.ico')
         win.title(u'Параметры...')
 
-        self.check_var.set(config.get_config_option('log'))
-        self.setting_path.set(config.get_config_option('path'))
+        self.check_var.set(config.get_config_option('Settings', 'log'))
+        self.setting_path.set(config.get_config_option('Settings', 'path'))
 
         label_frame = LabelFrame(win, text=u'Включить логфайл', padx=10, pady=10)
         frame = Frame(win)
@@ -262,7 +251,7 @@ class App:
 
     def save_settings(self, config, win):
         settings = {'path': self.setting_path.get(), 'log': self.check_var.get()}
-        config.update_config_options(settings)
+        config.update_config_options('Settings', settings)
         win.destroy()
 
     def get_path_dir(self):
