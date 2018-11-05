@@ -265,10 +265,6 @@ class App:
             self.setting_path.set(path)
 
 
-def message(text):
-    messagebox.showwarning(title=u'Сообщение', message=text)
-
-
 def center(root, width, height, offset):
     x = round(root.winfo_screenwidth() / 2 - width / 2 + offset)
     y = round(root.winfo_screenheight() / 2 - height / 2 + offset)
